@@ -26,7 +26,8 @@ namespace Archiver_Beta
             //Извикваме си методите
             InitializeComponent();
             this.MaximizeBox = false;
-            LoadDataListView();
+            StyleReceiptViwerList();
+            LoadDataToReceiptViewer();
             UpdateRowCountLabel();
             UpdateItemsSumLabel();
             GetSumOfReceipts();
@@ -67,7 +68,7 @@ namespace Archiver_Beta
 
 
         //Инициализираме си ListView, който ще визуализира данни от нашата база от данни
-        public void LoadDataListView()
+        public void StyleReceiptViwerList()
         {
             //Създаваме си колони и редове, със пропъртита за разстояние и подравняване
             ReceiptViewList.Columns.Add("Id", 50);
@@ -91,83 +92,105 @@ namespace Archiver_Beta
 
 
             //Правим връзка към нашата база от данни, инициализираме си променливите
-            SqlConnection connection = SQLconnection.GetConnection();
-            SqlCommand cmd;
-            DataTable dt;
-            SqlDataAdapter adapter;
-            DataSet dataSet;
-            //отваряме връзка
-            //използваме sql скрипт, който ще визуализира цялата таблица от базата от данни
-            connection.Open();
-            cmd = new SqlCommand("SELECT * FROM [Table] ", connection);
-            adapter = new SqlDataAdapter(cmd);
-            //правим си DataSett адаптер, който пълним с информацията от таблицата
-            dataSet = new DataSet();
-            adapter.Fill(dataSet, "dt");
-            connection.Close();
 
-            //Започваме да пълним ListView с данните от базата от данни
-            dt = dataSet.Tables["dt"];
-            int i;
-            for (i = 0; i < dt.Rows.Count; i++)
-            {
-
-                ListViewItem item = new ListViewItem(dt.Rows[i][0].ToString());
-                item.SubItems.Add(dt.Rows[i][1].ToString());
-                item.SubItems.Add(dt.Rows[i][2].ToString());
-                item.SubItems.Add(dt.Rows[i][3].ToString());
-                decimal amount = Convert.ToDecimal(dt.Rows[i].ItemArray[4]); //Визуализираме Amount в български лев
-                string formattedAmount = amount.ToString("C", new CultureInfo("bg-BG")); // форматираме стригна в бг лев
-                item.SubItems.Add(formattedAmount);
-                item.SubItems.Add(dt.Rows[i].ItemArray[5].ToString()); //Визуализираме Payment
-                item.SubItems.Add(dt.Rows[i].ItemArray[6].ToString()); //визуализираме Date
-
-                //Добавяме всеки елемент от по-горе изброените в list view
-                ReceiptViewList.Items.Add(item);
-                ReceiptViewList.Columns[0].Width = -2;
-
-            }
 
         }
+        private void LoadDataToReceiptViewer()
+        {
+            try
+            {
+                SqlConnection connection = SQLconnection.GetConnection();
+                SqlCommand cmd;
+                DataTable dt;
+                SqlDataAdapter adapter;
+                DataSet dataSet;
+
+                connection.Open();
+                cmd = new SqlCommand("SELECT * FROM [Table] ", connection);
+                adapter = new SqlDataAdapter(cmd);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, "dt");
+                ReceiptViewList.Items.Clear();
+
+
+                //Пълним съдържанието на листа с информация от базата от данни (елементи)
+                dt = dataSet.Tables["dt"];
+                int i; //i - id на всеки запис
+                for (i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    ListViewItem item = new ListViewItem(dt.Rows[i][0].ToString()); //Визуализираме id
+                    item.SubItems.Add(dt.Rows[i][1].ToString());  //Визуализираме Shopname
+                    item.SubItems.Add(dt.Rows[i][2].ToString()); //Визуализираме PurchaseType
+                    item.SubItems.Add(dt.Rows[i][3].ToString()); //Визуализиаме TotalItems
+                    decimal amount = Convert.ToDecimal(dt.Rows[i].ItemArray[4]); //Визуализираме Amount в български лев
+                    string formattedAmount = amount.ToString("C", new CultureInfo("bg-BG")); // форматираме стригна в бг лев
+                    item.SubItems.Add(formattedAmount);
+                    item.SubItems.Add(dt.Rows[i].ItemArray[5].ToString()); //Визуализираме Payment
+                    item.SubItems.Add(dt.Rows[i].ItemArray[6].ToString()); //визуализираме Date
+
+
+                    ReceiptViewList.Items.Add(item); //Добавяме всеки елемент от по-горе изброените в list view}
+
+                }
+                connection.Close();
+
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"There is an error with loading data from database {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        
+
 
         //Същото като предходния метод, но го използвам за рефреш
         private void RefreshListView()
         {
-
-            SqlConnection connection = SQLconnection.GetConnection();
-            SqlCommand cmd;
-            DataTable dt;
-            SqlDataAdapter adapter;
-            DataSet dataSet;
-
-            connection.Open();
-            cmd = new SqlCommand("SELECT * FROM [Table] ", connection);
-            adapter = new SqlDataAdapter(cmd);
-            dataSet = new DataSet();
-            adapter.Fill(dataSet, "dt");
-            ReceiptViewList.Items.Clear();
-            connection.Close();
-
-            //Пълним съдържанието на листа с информация от базата от данни (елементи)
-            dt = dataSet.Tables["dt"];
-            int i; //i - id на всеки запис
-            for (i = 0; i < dt.Rows.Count; i++)
+            try
             {
+                SqlConnection connection = SQLconnection.GetConnection();
+                SqlCommand cmd;
+                DataTable dt;
+                SqlDataAdapter adapter;
+                DataSet dataSet;
 
-                ListViewItem item = new ListViewItem(dt.Rows[i][0].ToString()); //Визуализираме id
-                item.SubItems.Add(dt.Rows[i][1].ToString());  //Визуализираме Shopname
-                item.SubItems.Add(dt.Rows[i][2].ToString()); //Визуализираме PurchaseType
-                item.SubItems.Add(dt.Rows[i][3].ToString()); //Визуализиаме TotalItems
-                decimal amount = Convert.ToDecimal(dt.Rows[i].ItemArray[4]); //Визуализираме Amount в български лев
-                string formattedAmount = amount.ToString("C", new CultureInfo("bg-BG")); // форматираме стригна в бг лев
-                item.SubItems.Add(formattedAmount);
-                item.SubItems.Add(dt.Rows[i].ItemArray[5].ToString()); //Визуализираме Payment
-                item.SubItems.Add(dt.Rows[i].ItemArray[6].ToString()); //визуализираме Date
+                connection.Open();
+                cmd = new SqlCommand("SELECT * FROM [Table] ", connection);
+                adapter = new SqlDataAdapter(cmd);
+                dataSet = new DataSet();
+                adapter.Fill(dataSet, "dt");
+                ReceiptViewList.Items.Clear();
 
 
-                ReceiptViewList.Items.Add(item); //Добавяме всеки елемент от по-горе изброените в list view
+                //Пълним съдържанието на листа с информация от базата от данни (елементи)
+                dt = dataSet.Tables["dt"];
+                int i; //i - id на всеки запис
+                for (i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    ListViewItem item = new ListViewItem(dt.Rows[i][0].ToString()); //Визуализираме id
+                    item.SubItems.Add(dt.Rows[i][1].ToString());  //Визуализираме Shopname
+                    item.SubItems.Add(dt.Rows[i][2].ToString()); //Визуализираме PurchaseType
+                    item.SubItems.Add(dt.Rows[i][3].ToString()); //Визуализиаме TotalItems
+                    decimal amount = Convert.ToDecimal(dt.Rows[i].ItemArray[4]); //Визуализираме Amount в български лев
+                    string formattedAmount = amount.ToString("C", new CultureInfo("bg-BG")); // форматираме стригна в бг лев
+                    item.SubItems.Add(formattedAmount);
+                    item.SubItems.Add(dt.Rows[i].ItemArray[5].ToString()); //Визуализираме Payment
+                    item.SubItems.Add(dt.Rows[i].ItemArray[6].ToString()); //визуализираме Date
+
+
+                    ReceiptViewList.Items.Add(item); //Добавяме всеки елемент от по-горе изброените в list view}
+
+                }
+                connection.Close();
+
             }
-
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"There is an error with loading data from database {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void RefreshButton_Click(object sender, EventArgs e)
