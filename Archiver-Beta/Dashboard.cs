@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
+﻿using System.Data.SqlClient;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System;
+
 
 namespace Archiver_Beta
 {
@@ -18,11 +12,16 @@ namespace Archiver_Beta
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
+
+
         }
+
+
 
         private void Dashboard_Load(object sender, EventArgs e)
         {
-            //извикваме си методи
+
+
             UpdateRowCountLabel();
             UpdateItemsSumLabel();
             GetSumAvarageofReceipt();
@@ -37,7 +36,7 @@ namespace Archiver_Beta
         {
             //Визуализиря общият брой въведени артикули от всяка бележка
             int rowCount = 0;
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -89,7 +88,7 @@ namespace Archiver_Beta
             //създаваме променлива
             int itemSum = 0;
             //свързваме базата от данни
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -135,7 +134,7 @@ namespace Archiver_Beta
         {
             decimal amountSum = 0;
             //свързваме нашата база от данни
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -184,7 +183,7 @@ namespace Archiver_Beta
         {
             //създаваме променлива, използваме връзка към нашата база от данни
             decimal amountAvarage = 0;
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {

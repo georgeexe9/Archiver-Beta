@@ -91,7 +91,7 @@ namespace Archiver_Beta
 
 
             //Правим връзка към нашата база от данни, инициализираме си променливите
-            SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True");
+            SqlConnection connection = SQLconnection.GetConnection();
             SqlCommand cmd;
             DataTable dt;
             SqlDataAdapter adapter;
@@ -133,8 +133,8 @@ namespace Archiver_Beta
         //Същото като предходния метод, но го използвам за рефреш
         private void RefreshListView()
         {
-            
-            SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True");
+
+            SqlConnection connection = SQLconnection.GetConnection();
             SqlCommand cmd;
             DataTable dt;
             SqlDataAdapter adapter;
@@ -193,7 +193,7 @@ namespace Archiver_Beta
         private int GetRowCount()
         {
             int rowCount = 0;
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -244,7 +244,7 @@ namespace Archiver_Beta
             //създаваме променлива
             int itemSum = 0;
             //свързваме базата от данни 
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -291,7 +291,7 @@ namespace Archiver_Beta
             //създаваме си променлива
             decimal amountSum = 0;
             //свързваме нашата база от данни
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {
@@ -341,7 +341,7 @@ namespace Archiver_Beta
         {
             //създаваме си променлива
             decimal amountAvarage = 0;
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 try
                 {

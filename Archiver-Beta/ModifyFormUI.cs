@@ -13,7 +13,11 @@ namespace Archiver_Beta
 
     {
         //глобална променлива
-        string payment;
+        private string payment;
+        private string ShopName;
+        private string Purchase;
+        private int Items;
+        private decimal Amount;
         //int id;
 
         public ViewUI()
@@ -158,8 +162,13 @@ namespace Archiver_Beta
         /// </summary>
         public void InsertData()
         {
+            //пренаписваме променливите пак 
+            ShopName = ShopNameBox.Text;
+            Purchase = PurchaseBox.Text;
+            Items = int.Parse(TotalBox.Text);
+            Amount = decimal.Parse(AmountBox.Text);
 
-            using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 //използаме нашите любимци try - catch - finally 
                 //0_0
@@ -171,14 +180,25 @@ namespace Archiver_Beta
                     using (SqlCommand cmd = new SqlCommand("INSERT INTO [Table] (ShopName, PurchaseType, Items, Amount, Payment, Date) VALUES (@ShopName, @PurchaseType, @Items, @Amount, @Payment, @Date)", connection))
                     {
                         //Запълва SHOPNAME.TEXT -> @SHOPNAME (КОЛОНА)
-                        cmd.Parameters.AddWithValue("@ShopName", ShopNameBox.Text);
+                        cmd.Parameters.AddWithValue("@ShopName", ShopName);
                         //Запълва PurchaseType.TEXT -> @PurchaseType (КОЛОНА)
-                        cmd.Parameters.AddWithValue("@PurchaseType", PurchaseBox.Text);
+                        cmd.Parameters.AddWithValue("@PurchaseType", Purchase);
                         //Запълва Items.TEXT -> @Items (КОЛОНА)
-                        cmd.Parameters.AddWithValue("@Items", TotalBox.Text);
+                        cmd.Parameters.AddWithValue("@Items", Items);
                         //Запълва Amount.TEXT -> @Amount (КОЛОНА)
-                        cmd.Parameters.AddWithValue("@Amount", decimal.Parse(AmountBox.Text));
+                        if (Amount == 0)
+                        {
+                            MessageBox.Show("Invalid amount number, please enter new value!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@Amount", Amount);
+                        }
+
+
                         //Запълва Payment.TEXT -> @Payment (КОЛОНА)
+
                         cmd.Parameters.AddWithValue("@Payment", payment);
                         //Запълва DateTimePicker1.Value -> @Date (КОЛОНА)
                         cmd.Parameters.AddWithValue("@Date", dateTimePicker1.Value);
@@ -221,7 +241,7 @@ namespace Archiver_Beta
         public void LoadData()
         {
             //Loading data from sql
-            SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True");
+            SqlConnection connection = SQLconnection.GetConnection();
             connection.Open();
             DataTable receipts = new DataTable();
 
@@ -272,6 +292,10 @@ namespace Archiver_Beta
         //Метод, който актуализира бележките от базата от данни
         private void UpdateData()
         {
+            ShopName = ShopNameBox.Text;
+            Purchase = PurchaseBox.Text;
+            Items = int.Parse(TotalBox.Text);
+            Amount = decimal.Parse(AmountBox.Text);
             //Трябва да сме селектирали ред от таблицата
             if (ModifyDataViewer.SelectedRows.Count > 0)
             {
@@ -285,7 +309,7 @@ namespace Archiver_Beta
                     payment = "Cash";
                 }
                 //Правим връзка, работи аналогично като първия метод за вмъкванена да данни
-                using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+                using (SqlConnection connection = SQLconnection.GetConnection())
                 {
 
                     try
@@ -295,10 +319,10 @@ namespace Archiver_Beta
                         using (SqlCommand cmd = new SqlCommand("UPDATE [Table] SET ShopName = @ShopName, PurchaseType = @PurchaseType, Items = @Items, Amount = @Amount, Payment = @Payment, Date = @Date WHERE Id = @Id", connection))
                         {
 
-                            cmd.Parameters.AddWithValue("@ShopName", ShopNameBox.Text);
-                            cmd.Parameters.AddWithValue("@PurchaseType", PurchaseBox.Text);
-                            cmd.Parameters.AddWithValue("@Items", TotalBox.Text);
-                            cmd.Parameters.AddWithValue("@Amount", decimal.Parse(AmountBox.Text));
+                            cmd.Parameters.AddWithValue("@ShopName", ShopName);
+                            cmd.Parameters.AddWithValue("@PurchaseType", Purchase);
+                            cmd.Parameters.AddWithValue("@Items", Items);
+                            cmd.Parameters.AddWithValue("@Amount", Amount);
                             cmd.Parameters.AddWithValue("@Payment", payment);
                             cmd.Parameters.AddWithValue("@Date", dateTimePicker1.Value);
                             cmd.Parameters.AddWithValue("@Id", int.Parse(IdBox.Text));
@@ -399,7 +423,7 @@ namespace Archiver_Beta
                     SqlConnection connecton = null;
                     try
                     {
-                        using (SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True"))
+                        using (SqlConnection connection = SQLconnection.GetConnection())
                         {
                             connection.Open();
                             //скрипта
@@ -443,6 +467,7 @@ namespace Archiver_Beta
         //Работи на същия принцип като горния метод
         private void ClearAllData()
         {
+            // Confirmation message
             string message = "If you delete all saved receipts, you will not be able to recover them! Are you sure you want to clear?";
             string title = "Clear All";
             MessageBoxButtons buttons = MessageBoxButtons.YesNo;
@@ -450,31 +475,37 @@ namespace Archiver_Beta
 
             if (DialogResult.Yes == MessageBox.Show(message, title, buttons, icon))
             {
-                SqlConnection connection = null;
                 try
                 {
-                    connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True");
-                    connection.Open();
-                    using (SqlCommand cmd = new SqlCommand("DELETE FROM [Table]", connection))
+                    // Get the SQL connection
+                    using (SqlConnection connection = SQLconnection.GetConnection())
                     {
-                        cmd.ExecuteNonQuery();
+                        connection.Open();
+
+                        // Define the DELETE query
+                        string query = "DELETE FROM [Table]"; // Replace 'YourTableName' with the actual table name
+
+                        // Execute the DELETE query
+                        using (SqlCommand cmd = new SqlCommand(query, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
                     }
+
+                    // Inform the user of the successful deletion
                     MessageBox.Show("All records have been deleted!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadData(); // Refresh the DataGridView
+
+                    // Refresh the DataGridView
+                    LoadData();
                 }
                 catch (Exception ex)
                 {
+                    // Handle any errors
                     MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    if (connection != null && connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                    }
                 }
             }
         }
+
 
         private void ClearDatabase_Click(object sender, EventArgs e)
         {
@@ -593,12 +624,10 @@ namespace Archiver_Beta
         }
 
         private void RefreshDatabase()
-        {//Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename="C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf";Integrated Security=True
-            //Рефреш на базата от данни, логиката е същата като при акута
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""C:\Users\george\Desktop\Archiver (2)\Archiver\Archiver-Beta\Archiver-Beta\Databases\Receipts.mdf"";Integrated Security=True";
+        {
             string query = "SELECT * FROM [Table]";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = SQLconnection.GetConnection())
             {
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();

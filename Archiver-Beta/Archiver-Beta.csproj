@@ -215,6 +215,7 @@
     <Compile Include="Reports.Designer.cs">
       <DependentUpon>Reports.cs</DependentUpon>
     </Compile>
+    <Compile Include="SQLconnection.cs" />
     <EmbeddedResource Include="Dashboard.resx">
       <DependentUpon>Dashboard.cs</DependentUpon>
     </EmbeddedResource>
@@ -309,13 +310,6 @@
     <None Include="Resources\panel2.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Databases\ArchiverDataBase.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="Databases\ArchiverDataBase_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>ArchiverDataBase.mdf</DependentUpon>
-    </Content>
     <Content Include="Databases\Receipts.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
