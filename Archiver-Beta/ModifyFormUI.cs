@@ -322,7 +322,14 @@ namespace Archiver_Beta
                             cmd.Parameters.AddWithValue("@ShopName", ShopName);
                             cmd.Parameters.AddWithValue("@PurchaseType", Purchase);
                             cmd.Parameters.AddWithValue("@Items", Items);
-                            cmd.Parameters.AddWithValue("@Amount", Amount);
+                            if (Amount == 0)
+                            {
+                                cmd.Parameters.AddWithValue("@Amount", Amount);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Please enter valid number for amount", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                             cmd.Parameters.AddWithValue("@Payment", payment);
                             cmd.Parameters.AddWithValue("@Date", dateTimePicker1.Value);
                             cmd.Parameters.AddWithValue("@Id", int.Parse(IdBox.Text));
@@ -332,7 +339,7 @@ namespace Archiver_Beta
 
 
                     }
-                    catch (Exception ex)
+                    catch (SqlException ex)
                     {
 
                         MessageBox.Show($"The receipt has not been added! There is an error with the connection! {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
