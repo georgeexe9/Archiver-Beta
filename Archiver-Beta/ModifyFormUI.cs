@@ -40,8 +40,6 @@ namespace Archiver_Beta
             this.AmountBox.Validating += new CancelEventHandler(TextBoxesEmpty);
             this.TotalBox.Validating += new CancelEventHandler(TextBoxesEmpty);
 
-
-
             //Извикваме метод
             LoadData();
         }
@@ -184,21 +182,26 @@ namespace Archiver_Beta
                         //Запълва PurchaseType.TEXT -> @PurchaseType (КОЛОНА)
                         cmd.Parameters.AddWithValue("@PurchaseType", Purchase);
                         //Запълва Items.TEXT -> @Items (КОЛОНА)
-                        cmd.Parameters.AddWithValue("@Items", Items);
-                        //Запълва Amount.TEXT -> @Amount (КОЛОНА)
-                        if (Amount == 0)
+                        if (Items != 0)
                         {
-                            MessageBox.Show("Invalid amount number, please enter new value!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            cmd.Parameters.AddWithValue("@Items", Items);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please enter valid number for items", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        //Запълва Amount.TEXT -> @Amount (КОЛОНА)
+                        if (Amount != 0)
+                        {
+                            cmd.Parameters.AddWithValue("@Amount", Amount);
 
                         }
                         else
                         {
-                            cmd.Parameters.AddWithValue("@Amount", Amount);
+                            MessageBox.Show("Please enter valid number for amount", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
 
-
                         //Запълва Payment.TEXT -> @Payment (КОЛОНА)
-
                         cmd.Parameters.AddWithValue("@Payment", payment);
                         //Запълва DateTimePicker1.Value -> @Date (КОЛОНА)
                         cmd.Parameters.AddWithValue("@Date", dateTimePicker1.Value);
@@ -321,8 +324,16 @@ namespace Archiver_Beta
 
                             cmd.Parameters.AddWithValue("@ShopName", ShopName);
                             cmd.Parameters.AddWithValue("@PurchaseType", Purchase);
-                            cmd.Parameters.AddWithValue("@Items", Items);
-                            if (Amount == 0)
+                            if (Items != 0)
+                            {
+                                cmd.Parameters.AddWithValue("@Items", Items);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Please enter valid number for Items", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                            if (Amount != 0)
                             {
                                 cmd.Parameters.AddWithValue("@Amount", Amount);
                             }
@@ -381,8 +392,6 @@ namespace Archiver_Beta
 
 
         }
-
-
 
         private void EditButton_Click(object sender, EventArgs e)
         {
@@ -577,7 +586,6 @@ namespace Archiver_Beta
             LookReceipt lookReceipt = new LookReceipt();
 
         }
-
         private void ViewerReceipButton_Click(object sender, EventArgs e)
         {
             //Ако сме избрали касова бележка (ред) от таблицата, бележката ще се отвори в нова форма и ще покажа нейната информация, а ако не сме 
@@ -623,7 +631,6 @@ namespace Archiver_Beta
             string amounthelp = ":12.98:";
             CashRadioButton.Checked = true;
 
-            //Защриховаме
             this.ShopNameBox.Text = shophelp;
             this.PurchaseBox.Text = purchasehelp;
             this.AmountBox.Text = amounthelp;
